@@ -1,0 +1,24 @@
+{
+  "name": "chlu-did-service",
+  "version": "1.0.0",
+  "main": "index.js",
+  "bin": {
+    "chlu-did-service": "index.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "mocha --opts tests/mocha.opts"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.3",
+    "ipfs": "^0.28.2",
+    "node-forge": "^0.7.5",
+    "orbit-db": "^0.19.7",
+    "uuid": "^3.2.1"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^5.1.1"
+  }
+}
