@@ -18,7 +18,6 @@ function getWebServer(ipfs, db) {
     })
     app.get('/reputation/:didId', async (req, res) => {
         const didId = req.params.didId
-        if (!isCID(didId)) return res.status(400).send('Invalid CID').end()
         try {
             const ddo = await getDDOFromDID(ipfs, db, didId)
             res.json(ddo)
