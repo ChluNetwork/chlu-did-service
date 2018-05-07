@@ -1,9 +1,11 @@
 const forge = require('node-forge')
 const log = require('./log')
 const uuidv4 = require('uuid/v4')
-const { dagGetResultToObject } = require('./ipfs')
+const CID = require('cids')
+const { dagGetResultToObject, isCID } = require('./ipfs')
 
-async function getDDOFromDIDAddress(ipfs, db, cid) {
+async function getDDOFromDID(ipfs, db, didId) {
+    const cid = await getDIDAddress(ipfs, db, didId)
     const reputationMultihash = await db.get(cid);
     if (!reputationMultihash) {
         throw new Error('DDO Not found. If it was just created, try again in a while')
@@ -30,14 +32,39 @@ async function resolveDDOLinks(ipfs, rep) {
     return rep
 }
 
+async function getDIDAddress(ipfs, db, didId) {
+    let didAddress = null
+    if (didId && didId.indexOf('did:chlu:') === 0) {
+        log('DID ID is a DID UUID', didId)
+        didAddress = await db.get(didId)
+        log('DID UUID', didId, 'resolved to Address', didAddress)
+    } else if (isCID(didId)) {
+        log('DID ID is a DID IPFS Address', didId)
+        didAddress = didId
+    } else {
+        throw new Error('Invalid DID ID ' + didId)
+    }
+    return didAddress
+}
+
+async function getDID(ipfs, db, didId){
+    log('Getting DID using ID', didId)
+    const didAddress = await getDIDAddress(ipfs, db, didId)
+    if (isCID(didAddress)) {
+        return await getDIDFromAddress(ipfs, didAddress)
+    } else {
+        throw new Error('Could not find DID Address for ' + didId)
+    }
+}
+
 async function getDIDFromAddress(ipfs, cid) {
     log('Getting DID at', cid)
     const result = await ipfs.dag.get(cid)
     return dagGetResultToObject(result)
 }
 
-async function verifyUsingDIDAddress(ipfs, didAddress, nonce, signature) {
-    const did = await getDIDFromAddress(ipfs, didAddress)
+async function verifyUsingDID(ipfs, db, didId, nonce, signature) {
+    const did = await getDID(ipfs, db, didAddress)
     return verify(did.publicKey[0].publicKeyPem, nonce, signature)
 }
 
@@ -87,9 +114,9 @@ function verify(publicKeyPem, data, signature) {
 }
 
 module.exports = {
-    getDDOFromDIDAddress,
-    getDIDFromAddress,
-    verifyUsingDIDAddress,
+    getDDOFromDID,
+    getDID,
+    verifyUsingDID,
     generateDID,
     sign,
     verify

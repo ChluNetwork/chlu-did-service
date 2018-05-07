@@ -1,41 +1,38 @@
 const express = require('express')
-const { verifyUsingDIDAddress, getDIDFromAddress, getDDOFromDIDAddress } = require('./did')
+const { verifyUsingDID, getDID, getDDOFromDID } = require('./did')
 const { isCID } = require('./ipfs')
 const log = require('./log')
 
 function getWebServer(ipfs, db) {
     const app = express()
     app.get('/', (req, res) => res.send('Chlu DID Service').end())
-    app.get('/did/:didAddress', async (req, res) => {
-        const didAddress = req.params.didAddress
-        if (!isCID(didAddress)) return res.status(400).send('Invalid CID').end()
+    app.get('/did/:didId', async (req, res) => {
+        const didId = req.params.didId
         try {
-            console.log(didAddress)
-            const did = await getDIDFromAddress(ipfs, didAddress)
+            const did = await getDID(ipfs, db, didId)
             res.json(did)
         } catch (error) {
             log(error)
             res.status(500).send(error.message).end()
         }
     })
-    app.get('/reputation/:didAddress', async (req, res) => {
-        const didAddress = req.params.didAddress
-        if (!isCID(didAddress)) return res.status(400).send('Invalid CID').end()
+    app.get('/reputation/:didId', async (req, res) => {
+        const didId = req.params.didId
+        if (!isCID(didId)) return res.status(400).send('Invalid CID').end()
         try {
-            const ddo = await getDDOFromDIDAddress(ipfs, db, didAddress)
+            const ddo = await getDDOFromDID(ipfs, db, didId)
             res.json(ddo)
         } catch (error) {
             log(error)
             res.status(500).send(error.message).end()
         }
     })
-    app.get('/did/login/:didAddress/:nonce/:signature', async (req, res) => {
-        const { didAddress, nonce, signature } = req.params
-        if (!isCID(didAddress)) return res.status(400).send('Invalid CID').end()
-        const valid = await verifyUsingDIDAddress(ipfs, didAddress, nonce, signature)
+    app.get('/did/login/:didId/:nonce/:signature', async (req, res) => {
+        const { didId, nonce, signature } = req.params
+        const valid = await verifyUsingDID(ipfs, db, didId, nonce, signature)
         if (valid) {
             try {
-                const ddo = await getDDOFromDIDAddress(ipfs, db, didAddress)
+                const ddo = await getDDOFromDID(ipfs, db, didid)
                 res.json({
                     valid,
                     ddo
