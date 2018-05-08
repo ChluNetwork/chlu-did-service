@@ -2,7 +2,7 @@ const getWebServer = require('../src/http')
 const sinon = require('sinon')
 const expect = require('chai').expect
 const request = require('supertest')
-const DID = require('../src/did')
+const ChluDID = require('chlu-did')
 const log = require('../src/log')
 
 describe('HTTP server', () => {
@@ -65,11 +65,12 @@ describe('HTTP server', () => {
 
     it('/did/verify', async () => {
         const data = 'example of some data to sign'
+        const DID = new ChluDID()
         const did = await DID.generateDID()
         // put real did in place in the fake IPFS so that the verify can work
         fakeIpfs['Qma'] = did.publicDidDocument
-        const output = await DID.sign(did.privateKeyPem, data)
-        await app.get('/did/verify/did:chlu:12345/' + output.signed + '/' + output.signature)
+        const output = await DID.sign(did.privateKeyBase58, data)
+        await app.get('/did/verify/did:chlu:12345/' + output.data + '/' + output.signature)
             .expect('Content-Type', 'application/json; charset=utf-8')
             .expect(200, {
                 valid: true,

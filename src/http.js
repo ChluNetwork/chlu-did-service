@@ -1,9 +1,10 @@
 const express = require('express')
-const { verifyUsingDID, getDID, getDDOFromDID } = require('./did')
+const ChluIPFSDID = require('./ipfs-did')
 const { isCID } = require('./ipfs')
 const log = require('./log')
 
 function getWebServer(ipfs, db, token) {
+    const chluIpfsDID = new ChluIPFSDID(ipfs, db)
     const app = express()
     app.get('/', (req, res) => res.send('Chlu DID Service').end())
     app.get('/did/:didId', async (req, res) => {
@@ -12,7 +13,7 @@ function getWebServer(ipfs, db, token) {
         } else {
             try {
                 const didId = req.params.didId
-                const did = await getDID(ipfs, db, didId)
+                const did = await chluIpfsDID.getDID(didId)
                 res.json(did)
             } catch (error) {
                 log(error)
@@ -26,7 +27,7 @@ function getWebServer(ipfs, db, token) {
         } else {
             try {
                 const didId = req.params.didId
-                const ddo = await getDDOFromDID(ipfs, db, didId)
+                const ddo = await chluIpfsDID.getDDOFromDID(didId)
                 res.json(ddo)
             } catch (error) {
                 log(error)
@@ -40,9 +41,9 @@ function getWebServer(ipfs, db, token) {
         } else {
             try {
                 const { didId, data, signature } = req.params
-                const valid = await verifyUsingDID(ipfs, db, didId, data, signature)
+                const valid = await chluIpfsDID.verifyUsingDID(didId, data, signature)
                 if (valid) {
-                    const ddo = await getDDOFromDID(ipfs, db, didId)
+                    const ddo = await chluIpfsDID.getDDOFromDID(didId)
                     res.json({
                         valid,
                         ddo
