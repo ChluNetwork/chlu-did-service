@@ -64,8 +64,12 @@ async function getDIDFromAddress(ipfs, cid) {
 }
 
 async function verifyUsingDID(ipfs, db, didId, nonce, signature) {
-    const did = await getDID(ipfs, db, didAddress)
-    return verify(did.publicKey[0].publicKeyPem, nonce, signature)
+    const did = await getDID(ipfs, db, didId)
+    if (did && did.publicKey && did.publicKey[0] && did.publicKey[0].publicKeyPem) {
+        return verify(did.publicKey[0].publicKeyPem, nonce, signature)
+    } else {
+        throw new Error('Could not find Public Key in DID ' + didId)
+    }
 }
 
 function generateDID() {

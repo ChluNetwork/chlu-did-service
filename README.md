@@ -4,6 +4,15 @@
 
 Also has a couple API calls to read DIDs and Chlu reputation
 
+### Configuring
+
+This project uses environment variables for configuration, but works out of the box
+
+You can use:
+
+- `$DIRECTORY` to customize where the files are saved on disk
+- `$TOKEN` to set a required API token as a get query parameter named `token`. Requests without this token will fail
+
 ### Using
 
 This project is very WIP at the moment
