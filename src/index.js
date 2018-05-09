@@ -5,7 +5,7 @@ const getWebServer = require('./http')
 const { getOrbitDB, getIPFS } = require('./ipfs')
 
 async function main() {
-    const directory = process.env.DIRECTORY || path.join(process.env.HOME, 'chlu-did-service')
+    const directory = process.env.DIRECTORY || path.join(process.env.HOME, '.chlu-did-service')
     log('Starting IPFS')
     const ipfs = await getIPFS(directory)
     log('IPFS ID')
@@ -19,6 +19,13 @@ async function main() {
     const port = process.env.PORT || 3000
     await new Promise(resolve => app.listen(port, resolve))
     log('Web server started on port', port)
+    return {
+        ipfs,
+        orbitDb,
+        db,
+        app,
+        port
+    }
 }
 
 module.exports = main
