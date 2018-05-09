@@ -31,7 +31,7 @@ async function getOrbitDB(ipfs, directory) {
     const storage = path.join(directory, 'orbit-db')
     log('Creating IPFS with storage at', storage)
     const orbitDb = new OrbitDB(ipfs, storage)
-    const db = await orbitDb.keyvalue('chlu-reputation-experimental', {
+    const db = await orbitDb.keyvalue('chlu-reputation-experimental-2', {
         write: ['*']
     })
     db.events.on('load', () => log('OrbitDB: Load'))
