@@ -21,6 +21,20 @@ function getWebServer(ipfs, db, token) {
             }
         }
     })
+    app.get('/did', async (req, res) => {
+        if (token && token !== req.query.token) {
+            res.status(400).send('Missing API token').end()
+        } else {
+            try {
+                const didList = await chluIpfsDID.getDIDList()
+                res.json(didList)
+            } catch (error) {
+                log(error)
+                res.status(500).send(error.message).end()
+            }
+        }
+
+    })
     app.get('/reputation/:didId', async (req, res) => {
         if (token && token !== req.query.token) {
             res.status(400).send('Missing API token').end()

@@ -63,6 +63,11 @@ class ChluIPFSDID {
         }
     }
 
+    async getDIDList() {
+        return Object.keys(this.db._index._index)
+            .filter(x => x.indexOf('did:') === 0)
+    }
+
     async getDIDFromAddress(cid) {
         log('Getting DID at', cid)
         const result = await this.ipfs.dag.get(cid)

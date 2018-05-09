@@ -35,7 +35,10 @@ describe('HTTP server', () => {
             }
         }
         db = {
-            get: sinon.stub().callsFake(async x => fakeDb[x] || null)
+            get: sinon.stub().callsFake(async x => fakeDb[x] || null),
+            _index: {
+                _index: fakeDb
+            }
         }
         app = request(getWebServer(ipfs, db))
     })
@@ -50,6 +53,12 @@ describe('HTTP server', () => {
     })
 
     it('/did', async () => {
+        await app.get('/did')
+            .expect('Content-Type', 'application/json; charset=utf-8')
+            .expect(200, ['did:chlu:12345'])
+    })
+
+    it('/did/:didId', async () => {
         await app.get('/did/lol').expect(500)
         await app.get('/did/did:chlu:12345')
             .expect('Content-Type', 'application/json; charset=utf-8')
