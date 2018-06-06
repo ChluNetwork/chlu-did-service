@@ -2,7 +2,7 @@ const getWebServer = require('../src/http')
 const sinon = require('sinon')
 const expect = require('chai').expect
 const request = require('supertest')
-const ChluDID = require('chlu-did')
+const ChluDID = require('chlu-did/src')
 const log = require('../src/log')
 
 describe('HTTP server', () => {
