@@ -1,7 +1,7 @@
 const log = require('./log')
 const CID = require('cids')
 const { dagGetResultToObject, isCID } = require('./ipfs')
-const ChluDID = require('chlu-did')
+const ChluDID = require('chlu-did/src')
 
 class ChluIPFSDID {
     constructor(ipfs, db) {
