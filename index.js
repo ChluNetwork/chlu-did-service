@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 const main = require('./src')
-let ipfs, orbitDb
+let chluIpfs, db
 
 main()
     .then(obj => {
-        ipfs = obj.ipfs
-        orbitDb = obj.orbitDb
+        chluIpfs = obj.chluIpfs
+        db = obj.db
     })
     .catch(error => {
         console.log(error)
@@ -16,11 +16,11 @@ main()
 process.on('SIGINT', async function() {
     try {
         console.log('Stopping gracefully');
-        if (orbitDb) {
-            await orbitDb.stop();
+        if (db) {
+            await db.close();
         }
-        if (ipfs) {
-            await ipfs.stop();
+        if (chluIpfs) {
+            await chluIpfs.stop();
         }
         console.log('Goodbye!');
         process.exit(0);

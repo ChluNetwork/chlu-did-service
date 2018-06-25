@@ -3,8 +3,8 @@ const ChluIPFSDID = require('./ipfs-did')
 const { isCID } = require('./ipfs')
 const log = require('./log')
 
-function getWebServer(ipfs, db, token) {
-    const chluIpfsDID = new ChluIPFSDID(ipfs, db)
+function getWebServer(chluIpfs, db, token) {
+    const chluIpfsDID = new ChluIPFSDID(chluIpfs, db)
     const app = express()
     app.get('/', (req, res) => res.send('Chlu DID Service').end())
     app.get('/did/:didId', async (req, res) => {
@@ -41,7 +41,7 @@ function getWebServer(ipfs, db, token) {
         } else {
             try {
                 const didId = req.params.didId
-                const ddo = await chluIpfsDID.getDDOFromDID(didId)
+                const ddo = await chluIpfsDID.getUnverifiedReviews(didId)
                 res.json(ddo)
             } catch (error) {
                 log(error)
@@ -57,7 +57,7 @@ function getWebServer(ipfs, db, token) {
                 const { didId, data, signature } = req.params
                 const valid = await chluIpfsDID.verifyUsingDID(didId, data, signature)
                 if (valid) {
-                    const ddo = await chluIpfsDID.getDDOFromDID(didId)
+                    const ddo = await chluIpfsDID.getUnverifiedReviews(didId)
                     res.json({
                         valid,
                         ddo
