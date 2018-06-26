@@ -6,12 +6,13 @@
     "chlu-did-service": "index.js"
   },
   "scripts": {
-    "start": "node index.js",
+    "start": "node index.js start",
     "test": "mocha --opts tests/mocha.opts"
   },
   "license": "MIT",
   "dependencies": {
-    "chlu-did": "ChluNetwork/chlu-did",
+    "chlu-ipfs-support": "ChluNetwork/chlu-ipfs-support#did",
+    "commander": "^2.15.1",
     "express": "^4.16.3",
     "ipfs": "^0.28.2",
     "orbit-db": "^0.19.8"
