@@ -11,11 +11,9 @@
   },
   "license": "MIT",
   "dependencies": {
-    "chlu-ipfs-support": "ChluNetwork/chlu-ipfs-support#did",
+    "chlu-ipfs-support": "ChluNetwork/chlu-ipfs-support#protobuf-upgrade",
     "commander": "^2.15.1",
-    "express": "^4.16.3",
-    "ipfs": "^0.28.2",
-    "orbit-db": "^0.19.8"
+    "express": "^4.16.3"
   },
   "devDependencies": {
     "chai": "^4.1.2",
