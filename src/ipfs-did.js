@@ -29,7 +29,10 @@ class ChluIPFSDID {
 
     async verifyUsingDID(didId, nonce, signature) {
         const did = await this.getDID(didId)
-        return this.chluDID.verify(did, nonce, signature)
+        log(`Verifying Signature by DID ${didId} with data ${nonce} and sig ${signature} => ...`)
+        const result = await this.chluDID.verify(did, nonce, signature)
+        log(`Verifying Signature by DID ${didId} with data ${nonce} and sig ${signature} => ${result}`)
+        return result
     }
 }
 
