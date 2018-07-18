@@ -47,6 +47,8 @@ function getWebServer(chluIpfs, token) {
                         valid,
                         publicDidDocument
                     })
+                } else {
+                    res.json({ valid })
                 }
             } catch (error) {
                 log(error)
