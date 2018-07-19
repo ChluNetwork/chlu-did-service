@@ -12,7 +12,12 @@ class ChluIPFSDID {
         const multihashes = await this.chluIpfs.getReviewsByDID(didId)
         const reviews = []
         for (const multihash of multihashes) {
-            const review = await this.chluIpfs.readReviewRecord(multihash)
+            const review = await this.chluIpfs.readReviewRecord(multihash, {
+                getLatestVersion: true,
+                validate: {
+                    throwErrors: false // this returns the errors instead of throwing
+                }
+            })
             reviews.push(review)
         }
         return reviews
