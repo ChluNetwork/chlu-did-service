@@ -4,7 +4,6 @@ const log = require('./log')
 const getWebServer = require('./http')
 const ChluIPFS = require('chlu-ipfs-support')
 const cli = require('commander')
-const { getDB } = require('./ipfs')
 
 let chluIpfs, db
 
@@ -38,12 +37,8 @@ async function start(cmd) {
         network: cmd.network || ChluIPFS.networks.experimental
     })
     await chluIpfs.start()
-    log('Opening Unverified Review database')
-    db = await getDB(chluIpfs.instance.orbitDb.orbitDb)
-    log('DB Address')
-    log(db.address.toString())
     log('Starting Web Server')
-    const app = getWebServer(chluIpfs, db, cmd.token)
+    const app = getWebServer(chluIpfs, cmd.token)
     const port = cmd.port || 3000
     await new Promise(resolve => app.listen(port, resolve))
     log('Web server started on port', port)

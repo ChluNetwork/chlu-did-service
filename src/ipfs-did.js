@@ -1,43 +1,43 @@
 const log = require('./log')
-const { dagGetResultToObject } = require('./ipfs')
 
 class ChluIPFSDID {
-    constructor(chluIpfs, db) {
+    constructor(chluIpfs) {
         this.chluIpfs = chluIpfs
         this.ipfs = chluIpfs.instance.ipfs
-        this.db = db
         this.chluDID = chluIpfs.instance.did.chluDID
     }
 
-    async getUnverifiedReviews(didId) {
-        const reputationMultihash = await this.db.get(didId);
-        if (!reputationMultihash) {
-            throw new Error('DDO Not found. If it was just created, try again in a while')
+    async getReviewsByDID(didId) {
+        if (!didId || !didId.match(/^did:chlu:/)) throw new Error('Invalid DID ID')
+        const multihashes = await this.chluIpfs.getReviewsByDID(didId)
+        const reviews = []
+        for (const multihash of multihashes) {
+            const review = await this.chluIpfs.readReviewRecord(multihash, {
+                getLatestVersion: true,
+                validate: {
+                    throwErrors: false // this returns the errors instead of throwing
+                }
+            })
+            reviews.push(review)
         }
-        log('Retrieving DDO at', reputationMultihash, ' from IPFS...')
-        const reputationDag = await this.ipfs.dag.get(reputationMultihash)
-        const data = await dagGetResultToObject(reputationDag)
-        log('Retrieved DDO for ', didId, 'resolved to DDO address', reputationMultihash, 'resolved to data', data)
-        return data
+        return reviews
     }
 
     async getDID(didId){
         log('Getting DID using ID', didId)
         if (typeof didId === 'string' && didId.indexOf('did:chlu') === 0) {
-            return this.chluIpfs.instance.did.getDID(didId)
+            return this.chluIpfs.getDID(didId)
         } else {
             throw new Error('DID ID invalid')
         } 
     }
 
-    async getDIDList() {
-        return Object.keys(this.db._index._index)
-            .filter(x => x.indexOf('did:') === 0)
-    }
-
     async verifyUsingDID(didId, nonce, signature) {
         const did = await this.getDID(didId)
-        return this.chluDID.verify(did, nonce, signature)
+        log(`Verifying Signature by DID ${didId} with data ${nonce} and sig ${signature} => ...`)
+        const result = await this.chluDID.verify(did, nonce, signature)
+        log(`Verifying Signature by DID ${didId} with data ${nonce} and sig ${signature} => ${result}`)
+        return result
     }
 }
 

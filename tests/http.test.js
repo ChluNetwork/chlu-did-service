@@ -6,7 +6,7 @@ const ChluDID = require('chlu-did/src')
 
 describe('HTTP server', () => {
 
-    let chluIpfs, db, app, fakeDb, fakeIpfs
+    let chluIpfs, app, fakeReviewsByDID, fakeReviewRecords
 
     before(() => {
         // disable logs
@@ -17,57 +17,40 @@ describe('HTTP server', () => {
         fakeDIDStore = {
             'did:chlu:12345': { id: 'did:chlu:12345' }
         }
-        fakeIpfs = {
-            'Qmb': { reviews: [] }
+        fakeReviewsByDID = {
+            'did:chlu:12345': ['Qma']
         }
-        fakeDb = {
-            'did:chlu:12345': 'Qmb'
+        fakeReviewRecords = {
+            'Qma': { review: 'hello world' }
         }
         chluIpfs = {
             start: sinon.stub().resolves(),
             stop: sinon.stub().resolves(),
             instance: {
                 did: {
-                    getDID: async x => {
-                        return fakeDIDStore[x]
-                    },
                     chluDID: new ChluDID()
-                },
-                ipfs: {
-                    dag: {
-                        get: sinon.stub().callsFake(async x =>{
-                            return {
-                                value: {
-                                    data: Buffer.from(JSON.stringify(fakeIpfs[x]))
-                                }
-                            }
-                        })
-                    }
                 }
+            },
+            getDID: async x => {
+                return fakeDIDStore[x]
+            },
+            getReviewsByDID: async x => {
+                return fakeReviewsByDID[x]
+            },
+            readReviewRecord: async x => {
+                return fakeReviewRecords[x]
             }
         }
-        db = {
-            get: sinon.stub().callsFake(async x => fakeDb[x] || null),
-            _index: {
-                _index: fakeDb
-            }
-        }
-        app = request(getWebServer(chluIpfs, db))
+        app = request(getWebServer(chluIpfs))
     })
 
     it('constructor', () => {
-        const ws = getWebServer(chluIpfs, db)
+        const ws = getWebServer(chluIpfs)
         expect(ws.listen).to.be.a('function')
     })
 
     it('/', async () => {
         await app.get('/').expect(200)
-    })
-
-    it('/did', async () => {
-        await app.get('/did')
-            .expect('Content-Type', 'application/json; charset=utf-8')
-            .expect(200, ['did:chlu:12345'])
     })
 
     it('/did/:didId', async () => {
@@ -81,7 +64,7 @@ describe('HTTP server', () => {
         await app.get('/reputation/lol').expect(500)
         await app.get('/reputation/did:chlu:12345')
             .expect('Content-Type', 'application/json; charset=utf-8')
-            .expect(200, fakeIpfs['Qmb'])
+            .expect(200, [{review:'hello world'}])
     })
 
     it('/did/verify', async () => {
@@ -95,13 +78,13 @@ describe('HTTP server', () => {
             .expect('Content-Type', 'application/json; charset=utf-8')
             .expect(200, {
                 valid: true,
-                ddo: fakeIpfs['Qmb']
+                publicDidDocument: did.publicDidDocument
             })
     })
 
     it('supports using an access token', async () => {
         const token = 'abcd'
-        app = request(getWebServer(chluIpfs, db, token))
+        app = request(getWebServer(chluIpfs, token))
         await app.get('/reputation/did:chlu:12345').expect(400, 'Missing API token')
         await app.get('/reputation/did:chlu:12345?token=abcd').expect(200)
         await app.get('/did/did:chlu:12345').expect(400, 'Missing API token')
