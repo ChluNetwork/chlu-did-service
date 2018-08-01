@@ -11,7 +11,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "chlu-ipfs-support": "ChluNetwork/chlu-ipfs-support#protobuf-upgrade",
+    "chlu-ipfs-support": "ChluNetwork/chlu-ipfs-support#misc-features",
     "commander": "^2.15.1",
     "express": "^4.16.3"
   },
