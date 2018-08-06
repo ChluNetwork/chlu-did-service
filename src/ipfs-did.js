@@ -3,13 +3,13 @@ const log = require('./log')
 class ChluIPFSDID {
     constructor(chluIpfs) {
         this.chluIpfs = chluIpfs
-        this.ipfs = chluIpfs.instance.ipfs
-        this.chluDID = chluIpfs.instance.did.chluDID
+        this.ipfs = chluIpfs.ipfs
+        this.chluDID = chluIpfs.didIpfsHelper.chluDID
     }
 
-    async getReviewsByDID(didId) {
+    async getReviewsAboutDID(didId) {
         if (!didId || !didId.match(/^did:chlu:/)) throw new Error('Invalid DID ID')
-        const multihashes = await this.chluIpfs.getReviewsByDID(didId)
+        const multihashes = await this.chluIpfs.getReviewsAboutDID(didId)
         const reviews = []
         for (const multihash of multihashes) {
             const review = await this.chluIpfs.readReviewRecord(multihash, {
@@ -25,7 +25,7 @@ class ChluIPFSDID {
 
     async getDID(didId){
         log('Getting DID using ID', didId)
-        if (typeof didId === 'string' && didId.indexOf('did:chlu') === 0) {
+        if (typeof didId === 'string' && didId.indexOf('did:') === 0) {
             return this.chluIpfs.getDID(didId)
         } else {
             throw new Error('DID ID invalid')

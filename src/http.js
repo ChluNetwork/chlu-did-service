@@ -26,7 +26,7 @@ function getWebServer(chluIpfs, token) {
         } else {
             try {
                 const didId = req.params.didId
-                const ddo = await chluIpfsDID.getReviewsByDID(didId)
+                const ddo = await chluIpfsDID.getReviewsAboutDID(didId)
                 res.json(ddo)
             } catch (error) {
                 log(error)

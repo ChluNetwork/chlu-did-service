@@ -1,7 +1,23 @@
 {
   "name": "chlu-did-service",
-  "version": "1.0.0",
+  "description": "HTTP API Server for Chlu DID functionality",
+  "version": "0.1.0",
+  "engines": {
+    "node": ">=8.0.0",
+    "npm": ">=5.6.0"
+  },
   "main": "index.js",
+  "author": {
+    "name": "Chlu",
+    "email": "info@chlu.io",
+    "url": "https://chlu.io"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/ChluNetwork/chlu-did-service.git",
+  "bugs": {
+    "url": "https://github.com/ChluNetwork/chlu-did-service/issues"
+  },
+  "homepage": "https://github.com/ChluNetwork/chlu-did-service/blob/master/README.md",
   "bin": {
     "chlu-did-service": "index.js"
   },
@@ -9,9 +25,8 @@
     "start": "node index.js start",
     "test": "mocha --opts tests/mocha.opts"
   },
-  "license": "MIT",
   "dependencies": {
-    "chlu-ipfs-support": "ChluNetwork/chlu-ipfs-support#protobuf-upgrade",
+    "chlu-ipfs-support": "ChluNetwork/chlu-ipfs-support#semver:~0.1.0",
     "commander": "^2.15.1",
     "express": "^4.16.3"
   },
@@ -20,11 +35,5 @@
     "mocha": "^5.1.1",
     "sinon": "^5.0.7",
     "supertest": "^3.0.0"
-  },
-  "repository": "https://github.com/ChluNetwork/chlu-did-service.git",
-  "author": {
-    "name": "Chlu",
-    "email": "info@chlu.io",
-    "url": "https://chlu.io"
   }
 }

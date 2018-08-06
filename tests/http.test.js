@@ -26,15 +26,13 @@ describe('HTTP server', () => {
         chluIpfs = {
             start: sinon.stub().resolves(),
             stop: sinon.stub().resolves(),
-            instance: {
-                did: {
-                    chluDID: new ChluDID()
-                }
+            didIpfsHelper: {
+                chluDID: new ChluDID()
             },
             getDID: async x => {
                 return fakeDIDStore[x]
             },
-            getReviewsByDID: async x => {
+            getReviewsAboutDID: async x => {
                 return fakeReviewsByDID[x]
             },
             readReviewRecord: async x => {

@@ -5,7 +5,7 @@ const getWebServer = require('./http')
 const ChluIPFS = require('chlu-ipfs-support')
 const cli = require('commander')
 
-let chluIpfs, db
+let chluIpfs
 
 process.on('SIGINT', async function() {
     try {
@@ -19,9 +19,6 @@ process.on('SIGINT', async function() {
 
 async function stop() {
     console.log('Stopping gracefully');
-    if (db) {
-        await db.close();
-    }
     if (chluIpfs) {
         await chluIpfs.stop();
     }
@@ -32,7 +29,6 @@ async function start(cmd) {
     const directory = cmd.directory || path.join(process.env.HOME, '.chlu-did-service')
     log('Starting ChluIPFS')
     chluIpfs = new ChluIPFS({
-        type: ChluIPFS.types.service,
         directory,
         network: cmd.network || ChluIPFS.networks.experimental
     })
